@@ -26,8 +26,16 @@ class BuktiTugasController extends Controller
         $buktiTugas->link_eksternal = $request->link_eksternal;
 
         if ($request->hasFile('berkas_path')) {
-            $buktiTugas->berkas_path = $request->file('berkas_path')->store('bukti_tugas', 'public');
-        }
+            $path = 'bukti-pekerjaan/';
+            $file = $request->file('berkas_path');
+            $new_name = date('Ymd') . uniqid() . '.' . $file->getClientOriginalExtension(); // Ambil ekstensi asli
+        
+            // Pindahkan file ke folder public/bukti-pekerjaan
+            $file->move(public_path($path), $new_name);
+        
+            // Simpan path ke database
+            $buktiTugas->berkas_path = $path . $new_name;
+        }        
 
         $buktiTugas->save();
 
@@ -37,7 +45,10 @@ class BuktiTugasController extends Controller
 
     public function getBuktiTugas($taskId)
     {
-        $buktiTugas = BuktiTugas::where('tugas_id', $taskId)->get(['id', 'berkas_path', 'link_eksternal']);
+        $buktiTugas = BuktiTugas::where('tugas_pegawai_id', $taskId)->get(['id', 'berkas_path', 'link_eksternal']);
+        
+        // dd($buktiTugas);
+
         return response()->json($buktiTugas);
     }
 
@@ -54,6 +65,33 @@ class BuktiTugasController extends Controller
         $bukti->delete();
 
         return response()->json(['success' => true]);
+    }
+
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'link_eksternal' => 'required|url'
+        ]);
+
+        $bukti = BuktiTugas::findOrFail($id);
+        $bukti->link_eksternal = $request->link_eksternal;
+        $bukti->save();
+
+        return response()->json(['success' => true, 'message' => 'Link eksternal berhasil diperbarui!']);
+    }
+
+    public function updateLink(Request $request, $id)
+    {
+        $request->validate([
+            'link_eksternal' => 'required|url'
+        ]);
+
+        $bukti = BuktiTugas::findOrFail($id);
+        $bukti->link_eksternal = $request->link_eksternal;
+        $bukti->save();
+
+        return response()->json(['success' => true, 'message' => 'Link eksternal berhasil diperbarui!']);
     }
 
 

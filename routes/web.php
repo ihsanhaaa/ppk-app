@@ -69,6 +69,9 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::put('/tugas-pegawai/update-points/{id}', [TugasPegawaiController::class, 'updatePoints']);
 
+    Route::put('/update-bukti-tugas/{id}', [BuktiTugasController::class, 'updateLink']);
+
+
 
 
 });

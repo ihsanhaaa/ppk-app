@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title')
-    Data Pekerjaan
+    Pekerjaan Saya
 @endsection
 
 @section('content')
@@ -43,12 +43,12 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                                <h4 class="mb-sm-0 font-size-18">Data Pekerjaan ({{ $pekerjaanSayas->count() }})</h4>
+                                <h4 class="mb-sm-0 font-size-18">Pekerjaan Saya ({{ $pekerjaanSayas->count() }})</h4>
 
                                 <div class="page-title-right">
                                     <ol class="breadcrumb m-0">
                                         <li class="breadcrumb-item"><a href="{{ route('home') }}">Dashboard</a></li>
-                                        <li class="breadcrumb-item active">Data Pekerjaan</li>
+                                        <li class="breadcrumb-item active">Pekerjaan Saya</li>
                                     </ol>
                                 </div>
 
@@ -75,28 +75,51 @@
 
                 @if (Auth::user()->pegawai_id)
 
-                    <div class="d-flex justify-content-center align-items-center">
-                        <form method="POST" action="/pekerjaan-saya" class="text-center">
-                            @csrf
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="d-flex">
-                                        <label for="">Pekerjaan</label>
-                                        <input type="text" name="nama_tugas" placeholder="Tambahkan pekerjaan..."
-                                            class="form-control" required>
-                                        <label for="">Deadline</label>
-                                        <input type="date" name="deadline" placeholder="Deadline" class="form-control" required
-                                            min="{{ date('Y-m-d') }}">
-                                        <button type="submit" class="btn btn-success">Simpan</button>
-                                    </div>
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#firstmodal"><i
+                            class="bx bx-plus me-1"></i> Tambah Pekerjaan</button>
+
+                    <!-- First modal dialog -->
+                    <div class="modal fade" id="firstmodal" aria-hidden="true" aria-labelledby="exampleModalToggleLabel"
+                        tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalToggleLabel">Tambah Pekerjaan</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
+                                <form method="POST" action="/pekerjaan-saya">
+                                    <div class="modal-body">
+                                        @csrf
+                                        <div class="mb-3">
+                                            <label for="deadline">Nama Pekerjaan <span style="color: red;">*</span> </label>
+                                            <input type="text" name="nama_tugas" class="form-control" required>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="deadline">Deadline Pekerjaan <span style="color: red;">*</span></label>
+                                            <input type="date" name="deadline" placeholder="Deadline" class="form-control"
+                                                required min="{{ date('Y-m-d') }}">
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="keterangan">Deskripsi Pekerjaan (opsional)</label>
+                                            <textarea name="keterangan" class="form-control" rows="4"></textarea>
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <!-- Toogle to second dialog -->
+                                            <button type="submit" class="btn btn-success">Simpan</button>
+                                        </div>
+                                    </div>
+                                </form>
+
                             </div>
-                        </form>
+                        </div>
                     </div>
 
                     <!-- Kanban Board -->
-                    <div class="row my-5">
-                        @foreach (['todo' => 'To Do', 'in-progress' => 'In Progress', 'done' => 'Done'] as $progres => $label)
+                    <div class="row my-4">
+                        @foreach (['todo' => 'Daftar Pekerjaan', 'in-progress' => 'Dalam Progres', 'done' => 'Selesai'] as $progres => $label)
                             <div class="col-md-4">
                                 <div class="card">
                                     <div class="card-header text-center bg-primary text-white">
@@ -104,58 +127,76 @@
                                     </div>
                                     <div class="card-body kanban-column" id="{{ $progres }}">
                                         @foreach ($pekerjaanSayas->where('progres', $progres) as $pekerjaanSaya)
-                                            <div class="list-pekerjaan mb-2 p-2 border-left border-primary" data-id="{{ $pekerjaanSaya->id }}" data-has-bukti="{{ $pekerjaanSaya->buktiTugas->isNotEmpty() ? 'true' : 'false' }}">
+                                            <div class="list-pekerjaan mb-2 p-2 border-left border-primary"
+                                                data-id="{{ $pekerjaanSaya->id }}"
+                                                data-has-bukti="{{ $pekerjaanSaya->buktiTugas->isNotEmpty() ? 'true' : 'false' }}">
                                                 <div class="d-flex justify-content-between align-items-center">
-                                                    <span class="fw-bold">{{ $pekerjaanSaya->nama_tugas }} ({{ $pekerjaanSaya->points }})</span>
+                                                    <span style="font-size: 16px" class="fw-bold mb-2">{{ $pekerjaanSaya->nama_tugas }}
+                                                        ({{ $pekerjaanSaya->points }})</span>
                                                     <div class="d-flex">
-                                                        <button class="btn btn-success btn-sm p-1 me-1 btn-input-points" 
-                                                                data-id="{{ $pekerjaanSaya->id }}">
-                                                            <i class="fas fa-spell-check"></i>
-                                                        </button>
+                                                        @role('Ketua')
+                                                        @if ($pekerjaanSaya->progres === 'done')
+                                                            <button class="btn btn-success btn-sm p-1 me-1 btn-input-points"
+                                                                title="Beri Poin" data-id="{{ $pekerjaanSaya->id }}"
+                                                                data-nama_tugas="{{ $pekerjaanSaya->nama_tugas }}"
+                                                                data-keterangan_tugas="{{ $pekerjaanSaya->keterangan }}">
+                                                                <i class="fas fa-spell-check"></i>
+                                                            </button>
+                                                        @endif
+                                                        @endrole
 
                                                         <button class="btn btn-warning btn-sm p-1 me-1" onclick="editTask(
-                                                                        {{ $pekerjaanSaya->id }}, 
-                                                                        '{{ $pekerjaanSaya->nama_tugas }}', 
-                                                                        '{{ $pekerjaanSaya->prioritas }}', 
-                                                                        '{{ $pekerjaanSaya->deadline ? \Carbon\Carbon::parse($pekerjaanSaya->deadline)->format('Y-m-d') : '' }}'
-                                                                    )"> <i class="fas fa-edit"></i>
+                                                                                                                        {{ $pekerjaanSaya->id }}, 
+                                                                                                                        '{{ $pekerjaanSaya->nama_tugas }}', 
+                                                                                                                        '{{ $pekerjaanSaya->prioritas }}', 
+                                                                                                                        '{{ $pekerjaanSaya->deadline ? \Carbon\Carbon::parse($pekerjaanSaya->deadline)->format('Y-m-d') : '' }}'
+                                                                                                                    )"
+                                                            title="Edit Pekerjaan"> <i class="fas fa-edit"></i>
                                                         </button>
 
 
-                                                        <button class="btn btn-danger btn-sm p-1"
-                                                            onclick="deleteTask({{ $pekerjaanSaya->id }})"> <i class="fas fa-trash-alt"></i>
+                                                        <button class="btn btn-danger btn-sm p-1" title="Hapus Pekerjaan"
+                                                            onclick="deleteTask({{ $pekerjaanSaya->id }})"> <i
+                                                                class="fas fa-trash-alt"></i>
                                                         </button>
                                                     </div>
                                                 </div>
-                                                <small style="font-size: 13px;">Prioritas: 
+
+                                                <small style="font-size: 14px;" class="d-block mb-2">Deskripsi:
+                                                    {{ $pekerjaanSaya->keterangan ?? '-' }}</small>
+
+                                                <small style="font-size: 14px;">Prioritas:
                                                     <div class="badge 
-                                                        @if($pekerjaanSaya->prioritas == 'penting') bg-danger 
-                                                        @elseif($pekerjaanSaya->prioritas == 'normal') bg-warning 
-                                                        @elseif($pekerjaanSaya->prioritas == 'rendah') bg-success 
-                                                        @else bg-secondary @endif 
-                                                        d-inline-block">
+                                                                                                        @if($pekerjaanSaya->prioritas == 'penting') bg-danger 
+                                                                                                        @elseif($pekerjaanSaya->prioritas == 'normal') bg-warning 
+                                                                                                        @elseif($pekerjaanSaya->prioritas == 'rendah') bg-success 
+                                                                                                        @else bg-secondary @endif 
+                                                                                                        d-inline-block">
                                                         {{ ucfirst($pekerjaanSaya->prioritas) }}
-                                                    </div> 
-                                                    Deadline: 
+                                                    </div>
+                                                    Deadline:
                                                     <div class="badge bg-success d-inline-block">
                                                         {{ $pekerjaanSaya->formatted_deadline }}
                                                     </div>
                                                 </small>
-                                                
-                                                <small style="font-size: 13px;" class="d-block text-muted mt-2">Dibuat pada:
+
+                                                <small style="font-size: 13px;" class="d-block text-muted my-2">Dibuat pada:
                                                     {{ $pekerjaanSaya->created_at->translatedFormat('d F Y') }}</small>
-                                                    
+
                                                 @if ($pekerjaanSaya->buktiTugas->isNotEmpty())
-                                                    
-                                                    <ul style="list-style: none; padding-left: 0;">
+                                                    <ul style="list-style: none; padding-left: 0; margin-bottom: 0;">
                                                         @foreach ($pekerjaanSaya->buktiTugas as $bukti)
-                                                            <li>
-                                                                <small style="font-size: 13px;" class="d-block text-muted mt-2">
+                                                            <li style="margin-bottom: 5px;"> <!-- Beri sedikit jarak antar item -->
+                                                                <small style="font-size: 13px;" class="text-muted">
                                                                     @if ($bukti->berkas_path)
-                                                                        <a href="{{ asset('storage/' . $bukti->berkas_path) }}" target="_blank"> <i class="fas fa-file"></i> Lihat File</a>
+                                                                        <a href="{{ asset($bukti->berkas_path) }}" target="_blank">
+                                                                            <i class="fas fa-file"></i> Lihat File
+                                                                        </a>
                                                                     @endif
                                                                     @if ($bukti->link_eksternal)
-                                                                        <a href="{{ $bukti->link_eksternal }}" target="_blank"> <i class="fas fa-link"></i> Buka Link</a>
+                                                                        <a href="{{ $bukti->link_eksternal }}" target="_blank">
+                                                                            <i class="fas fa-link"></i> Buka Link
+                                                                        </a>
                                                                     @endif
                                                                 </small>
                                                             </li>
@@ -163,6 +204,8 @@
                                                     </ul>
                                                 @endif
                                             </div>
+
+                                            <hr style="border: 1px solid #c0c0c0; opacity: 1; margin: 5px 0;">
 
                                         @endforeach
                                     </div>
@@ -176,14 +219,14 @@
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="editModalLabel">Edit Tugas</h5>
+                                    <h5 class="modal-title" id="editModalLabel">Edit Pekerjaan</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
                                     <input type="hidden" id="editTaskId">
-                                    
+
                                     <div class="mb-3">
-                                        <label class="form-label">Judul Tugas</label>
+                                        <label class="form-label">Nama Pekerjaan</label>
                                         <input type="text" id="editTaskNamaTugas" class="form-control">
                                     </div>
 
@@ -205,7 +248,14 @@
 
                                     <!-- Tampilkan Bukti Tugas (Link & File) -->
                                     <div id="buktiTugasContainer">
-                                        <h6 class="fw-bold">Bukti Tugas</h6>
+                                        <h6 class="fw-bold">Bukti Pekerjaan</h6>
+
+                                        <div id="success-alert" class="alert alert-success alert-dismissible fade show d-none"
+                                            role="alert">
+                                            <span id="alert-message"></span>
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                        </div>
+
                                         <ul id="buktiTugasList" style="list-style: none; padding-left: 0;"></ul>
                                     </div>
 
@@ -220,11 +270,12 @@
 
 
                     <!-- Modal Bukti Tugas -->
-                    <div class="modal fade" id="modalBuktiTugas" tabindex="-1" aria-labelledby="modalBuktiTugasLabel" aria-hidden="true">
+                    <div class="modal fade" id="modalBuktiTugas" tabindex="-1" aria-labelledby="modalBuktiTugasLabel"
+                        aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="modalBuktiTugasLabel">Bukti Penyelesaian Tugas</h5>
+                                    <h5 class="modal-title" id="modalBuktiTugasLabel">Bukti Penyelesaian Pekerjaan</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
@@ -233,8 +284,10 @@
 
                                         <div class="mb-3">
                                             <label for="linkEksternal" class="form-label">Masukkan Link</label>
-                                            <input type="url" class="form-control" id="linkEksternal" name="link_eksternal" placeholder="Masukkan link bukti tugas">
-                                            <span id="errorLink" style="color: red; font-size: 14px; display: none;">Masukkan URL yang valid.</span>
+                                            <input type="url" class="form-control" id="linkEksternal" name="link_eksternal"
+                                                placeholder="Masukkan link bukti pekerjaan">
+                                            <span id="errorLink" style="color: red; font-size: 14px; display: none;">Masukkan
+                                                URL yang valid.</span>
                                         </div>
                                         <p>atau</p>
                                         <div class="mb-3">
@@ -242,8 +295,11 @@
                                             <input type="file" class="form-control" id="berkasBukti" name="berkas_path">
                                         </div>
 
-                                        <button type="button" class="btn btn-primary" onclick="submitBuktiTugas()">Simpan Bukti</button>
-                                        <p id="errorMessage" style="color: red; display: none; margin-top: 10px;">Harap isi salah satu: link atau unggah berkas.</p>
+                                        <button type="button" class="btn btn-primary" onclick="submitBuktiTugas()">Simpan
+                                            Bukti</button>
+                                        <p id="errorMessage" style="color: red; display: none; margin-top: 10px;">Harap isi
+                                            salah satu: link
+                                            atau unggah berkas.</p>
 
                                     </form>
                                 </div>
@@ -252,11 +308,12 @@
                     </div>
 
                     <!-- Modal Input Points -->
-                    <div class="modal fade" id="modalInputPoints" tabindex="-1" aria-labelledby="modalInputPointsLabel" aria-hidden="true">
+                    <div class="modal fade" id="modalInputPoints" tabindex="-1" aria-labelledby="modalInputPointsLabel"
+                        aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="modalInputPointsLabel">Masukkan Points</h5>
+                                    <h5 class="modal-title" id="modalInputPointsLabel">Masukkan Point</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
@@ -264,7 +321,19 @@
                                         @csrf
                                         <input type="hidden" id="tugasPegawaiId">
                                         <div class="mb-3">
-                                            <label for="points" class="form-label">Points</label>
+                                            <label for="nama_tugas" class="form-label">Nama Pekerjaan</label>
+                                            <input type="text" class="form-control" id="nama_tugas" name="nama_tugas" readonly>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="keterangan_tugas">Deskripsi Pekerjaan</label>
+                                            <textarea name="keterangan_tugas" id="keterangan_tugas" class="form-control"
+                                                rows="4" readonly></textarea>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="points" class="form-label">Point <span style="color: red">*</span>
+                                            </label>
                                             <input type="number" class="form-control" id="points" name="points" required>
                                         </div>
                                         <button type="submit" class="btn btn-success">Simpan</button>
@@ -383,7 +452,7 @@
 
             // Hapus Tugas
             function deleteTask(taskId) {
-                if (!confirm("Apakah Anda yakin ingin menghapus tugas ini?")) return;
+                if (!confirm("Apakah Anda yakin ingin menghapus pekerjaan ini?")) return;
 
                 fetch(`/tugas-pegawai/${taskId}`, {
                     method: 'DELETE',
@@ -397,7 +466,7 @@
                     });
             }
 
-            // Edit Tugas
+            // Edit Pekerjaan
             function editTask(taskId, taskTitle, taskPriority, taskDeadline) {
                 document.getElementById("editTaskId").value = taskId;
                 document.getElementById("editTaskNamaTugas").value = taskTitle;
@@ -422,15 +491,15 @@
 
                             if (bukti.berkas_path) {
                                 listItem.innerHTML = `
-                                    <a href="/storage/${bukti.berkas_path}" target="_blank"><i class="fas fa-file"></i> Lihat File</a>
-                                    <button class="btn btn-danger btn-sm" onclick="hapusBukti(${bukti.id})"><i class="fas fa-trash-alt"></i></button>
-                                `;
+                                            <a href="/storage/${bukti.berkas_path}" target="_blank"><i class="fas fa-file"></i> Lihat File</a>
+                                            <button class="btn btn-danger btn-sm" onclick="hapusBukti(${bukti.id})"><i class="fas fa-trash-alt"></i></button>
+                                        `;
                             } else if (bukti.link_eksternal) {
                                 listItem.innerHTML = `
-                                    <input type="text" class="form-control form-control-sm d-inline-block w-50" value="${bukti.link_eksternal}" id="link_${bukti.id}">
-                                    <button class="btn btn-primary btn-sm ms-2" onclick="updateLink(${bukti.id})"><i class="fas fa-save"></i></button>
-                                    <button class="btn btn-danger btn-sm ms-2" onclick="hapusBukti(${bukti.id})"><i class="fas fa-trash-alt"></i></button>
-                                `;
+                                            <input type="text" class="form-control form-control-sm d-inline-block w-70" value="${bukti.link_eksternal}" id="link_${bukti.id}">
+                                            <button class="btn btn-primary btn-sm ms-2" onclick="updateLink(${bukti.id})" title="Simpan"><i class="fas fa-save"></i></button>
+                                            <button class="btn btn-danger btn-sm ms-2" onclick="hapusBukti(${bukti.id})" title="Hapus"><i class="fas fa-trash-alt"></i></button>
+                                        `;
                             }
 
                             buktiTugasList.appendChild(listItem);
@@ -441,24 +510,30 @@
                 modal.show();
             }
 
-            // Fungsi untuk menyimpan perubahan link eksternal
             function updateLink(buktiId) {
-                let linkValue = document.getElementById(`link_${buktiId}`).value;
+                let inputField = document.getElementById(`link_${buktiId}`);
+                let newLink = inputField.value;
 
-                fetch(`/tugas-pegawai/bukti/${buktiId}`, {
-                    method: 'PATCH',
-                    headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ link_eksternal: linkValue })
+                fetch(`/update-bukti-tugas/${buktiId}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({ link_eksternal: newLink })
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert("Link berhasil diperbarui!");
-                    } else {
-                        alert("Gagal memperbarui link!");
-                    }
-                });
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showSuccessAlert("Link berhasil diperbarui!");
+                        } else {
+                            alert("Gagal memperbarui link.");
+                        }
+                    })
+                    .catch(error => console.error("Error:", error));
             }
+
+
 
 
             // Hapus Bukti Tugas
@@ -469,12 +544,12 @@
                     method: 'DELETE',
                     headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        document.querySelector(`#buktiTugasList li button[onclick="hapusBukti(${buktiId})"]`).parentElement.remove();
-                    }
-                });
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            document.querySelector(`#buktiTugasList li button[onclick="hapusBukti(${buktiId})"]`).parentElement.remove();
+                        }
+                    });
             }
 
 
@@ -539,31 +614,37 @@
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                     },
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.error) {
-                        alert(data.error);
-                    } else {
-                        alert("Bukti tugas berhasil disimpan!");
-                        location.reload();
-                    }
-                })
-                .catch(error => console.error('Error:', error));
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            alert(data.error);
+                        } else {
+                            alert("Bukti tugas berhasil disimpan!");
+                            location.reload();
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
             }
 
         </script>
 
         <script>
-            $(document).ready(function() {
+            $(document).ready(function () {
                 // Ketika tombol edit diklik
-                $('.btn-input-points').click(function() {
+                $('.btn-input-points').click(function () {
                     let tugasPegawaiId = $(this).data('id');
+                    let namaTugas = $(this).data('nama_tugas');
+                    let keteranganTugas = $(this).data('keterangan_tugas');
+
                     $('#tugasPegawaiId').val(tugasPegawaiId);
+                    $('#nama_tugas').val(namaTugas);
+                    $('#keterangan_tugas').val(keteranganTugas);
+
                     $('#modalInputPoints').modal('show');
                 });
 
                 // Ketika form disubmit
-                $('#formUpdatePoints').submit(function(e) {
+                $('#formUpdatePoints').submit(function (e) {
                     e.preventDefault();
                     let tugasPegawaiId = $('#tugasPegawaiId').val();
                     let points = $('#points').val();
@@ -575,19 +656,34 @@
                             _token: "{{ csrf_token() }}",
                             points: points
                         },
-                        success: function(response) {
+                        success: function (response) {
                             if (response.success) {
-                                alert("Points berhasil diperbarui!");
+                                // alert("Points berhasil diperbarui!");
                                 $('#modalInputPoints').modal('hide');
                                 location.reload(); // Refresh data
                             }
                         },
-                        error: function(xhr) {
+                        error: function (xhr) {
                             alert("Gagal mengupdate points.");
                         }
                     });
                 });
             });
+        </script>
+
+        <script>
+            function showSuccessAlert(message) {
+                let alertBox = document.getElementById("success-alert");
+                let alertMessage = document.getElementById("alert-message");
+
+                alertMessage.textContent = message;
+                alertBox.classList.remove("d-none");
+
+                setTimeout(() => {
+                    alertBox.classList.add("d-none");
+                }, 3000);
+            }
+
         </script>
 
     @endpush

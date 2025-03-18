@@ -15,8 +15,9 @@ class TugasPegawaiController extends Controller
     public function index()
     {
 
-        $pekerjaanSayas = TugasPegawai::with('user')
-            ->orderBy('created_at', 'asc')
+        $pekerjaanSayas = TugasPegawai::with('buktiTugas')
+            ->where('user_id', Auth::id())
+            ->orderBy('created_at', 'desc')
             ->get();
 
         return view('pekerjaan-pegawai.index', compact('pekerjaanSayas'));
@@ -30,13 +31,14 @@ class TugasPegawaiController extends Controller
         // dd($request);
         $request->validate([
             'nama_tugas' => 'required|string|max:255',
+            'keterangan' => 'nullable|string|max:255',
             'deadline' => 'required|date|after_or_equal:today'
         ]);
 
         $pegawaiID = Auth::user()->pegawai_id;
 
         if (!$pegawaiID) {
-            return redirect()->back()->with('error', 'Anda tidak terdaftar didatabase pegawai');
+            return redirect()->back()->with('alert', 'Anda tidak terdaftar didatabase pegawai');
         }
 
         $semesterAktif = Semester::where('is_active', true)->first();
@@ -47,6 +49,7 @@ class TugasPegawaiController extends Controller
 
         TugasPegawai::create([
             'nama_tugas' => $request->nama_tugas,
+            'keterangan' => $request->keterangan,
             'deadline' => $request->deadline,
             'progres' => 'todo',
             'semester_id' => $semesterAktif->id,
