@@ -3,7 +3,7 @@
         <div class="d-flex">
             <!-- LOGO -->
             <div class="navbar-brand-box">
-                <a href="index.html" class="logo logo-dark">
+                <a href="{{ route('home') }}" class="logo logo-dark">
                     <span class="logo-sm">
                         <img src="{{ asset('assets/logo-stikes.svg') }}" alt="" height="40">
                     </span>
@@ -12,7 +12,7 @@
                     </span>
                 </a>
 
-                <a href="index.html" class="logo logo-light">
+                <a href="{{ route('home') }}" class="logo logo-light">
                     <span class="logo-sm">
                         <img src="{{ asset('assets/logo-stikes.svg') }}" alt="" height="40">
                     </span>
@@ -35,12 +35,6 @@
                 <button type="button" class="btn header-item" id="mode-setting-btn">
                     <i data-feather="moon" class="icon-lg layout-mode-dark"></i>
                     <i data-feather="sun" class="icon-lg layout-mode-light"></i>
-                </button>
-            </div>
-
-            <div class="dropdown d-inline-block">
-                <button type="button" class="btn header-item right-bar-toggle me-2">
-                    <i data-feather="settings" class="icon-lg"></i>
                 </button>
             </div>
 
@@ -100,49 +94,55 @@
                     <li>
                         <a href="{{ route('home') }}">
                             <i data-feather="home"></i>
-                            <span class="badge rounded-pill bg-success-subtle text-success float-end">9+</span>
                             <span data-key="t-dashboard">Dashboard</span>
                         </a>
                     </li>
 
-                    @role('Pegawai')
-                        <li class="menu-title" data-key="t-apps">Pekerjaan Tendik</li>
+                    @role('Ketua')
                         <li>
                             <a href="{{ route('data-pegawai.index') }}">
-                                <i data-feather="message-square"></i>
+                                <i data-feather="users"></i>
                                 <span data-key="t-chat">Data Pegawai</span>
                             </a>
                         </li>
 
                         <li>
                             <a href="{{ route('pekerjaan-saya.index') }}">
-                                <i data-feather="message-square"></i>
+                                <i data-feather="trello"></i>
                                 <span data-key="t-chat">Pekerjaan Saya</span>
                             </a>
                         </li>
 
                         <li>
-                            <a href="">
-                                <i data-feather="message-square"></i>
+                            <a href="{{ route('pekerjaan-pegawai.index') }}">
+                                <i data-feather="clipboard"></i>
+                                <span class="badge rounded-pill bg-success-subtle text-success float-end">9+</span>
                                 <span data-key="t-chat">Pekerjaan Pegawai</span>
                             </a>
                         </li>
+                    @endrole
+
+                    @role('Pegawai')
+                        <li>
+                            <a href="{{ route('data-pegawai.index') }}">
+                                <i data-feather="users"></i>
+                                <span data-key="t-chat">Data Pegawai</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{{ route('pekerjaan-saya.index') }}">
+                                <i data-feather="trello"></i>
+                                <span data-key="t-chat">Pekerjaan Saya</span>
+                            </a>
+                        </li>
+
                     @endrole
 
                 @endguest
 
             </ul>
 
-            <div class="card sidebar-alert shadow-none text-center mx-4 mb-0 mt-5">
-                <div class="card-body">
-                    <img src="assets/images/giftbox.png" alt="">
-                    <div class="mt-4">
-                        <h5 class="alertcard-title font-size-16">Unlimited Access</h5>
-                        <p class="font-size-13 text-dark">Upgrade your plan from a Free trial, to select ‘Business Plan’.</p>
-                        <a href="#!" class="btn btn-primary mt-2">Upgrade Now</a>
-                    </div>
-                </div>
-            </div>
         </div>
         <!-- Sidebar -->
     </div>

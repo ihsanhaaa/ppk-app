@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title')
-    Pekerjaan Saya
+    Pekerjaan {{ $pegawai->nama_pegawai }}
 @endsection
 
 @section('content')
@@ -43,12 +43,12 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                                <h4 class="mb-sm-0 font-size-18">Pekerjaan Saya ({{ $pekerjaanSayas->count() }})</h4>
+                                <h4 class="mb-sm-0 font-size-18">Pekerjaan {{ $pegawai->nama_pegawai }} ({{ $pekerjaanPegawais->count() }})</h4>
 
                                 <div class="page-title-right">
                                     <ol class="breadcrumb m-0">
                                         <li class="breadcrumb-item"><a href="{{ route('home') }}">Dashboard</a></li>
-                                        <li class="breadcrumb-item active">Pekerjaan Saya</li>
+                                        <li class="breadcrumb-item active">Daftar Pekerjaan</li>
                                     </ol>
                                 </div>
 
@@ -126,7 +126,7 @@
                                         <h5 class="mb-0">{{ $label }}</h5>
                                     </div>
                                     <div class="card-body kanban-column" id="{{ $progres }}">
-                                        @foreach ($pekerjaanSayas->where('progres', $progres) as $pekerjaanSaya)
+                                        @foreach ($pekerjaanPegawais->where('progres', $progres) as $pekerjaanSaya)
                                             <div class="list-pekerjaan mb-2 p-2 border-left border-primary"
                                                 data-id="{{ $pekerjaanSaya->id }}"
                                                 data-has-bukti="{{ $pekerjaanSaya->buktiTugas->isNotEmpty() ? 'true' : 'false' }}">
@@ -619,7 +619,7 @@
                         if (data.error) {
                             alert(data.error);
                         } else {
-                            alert("Bukti tugas berhasil disimpan!");
+                            // alert("Bukti tugas berhasil disimpan!");
                             location.reload();
                         }
                     })

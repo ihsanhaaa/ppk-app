@@ -73,8 +73,8 @@
                                         <tr>
                                             <th>#</th>
                                             <th>Nama Pegawai</th>
-                                            <th>NIPY</th>
                                             <th>Status Login</th>
+                                            <th>Jumlah Pekerjaan</th>
                                             <th>Jumlah Poin</th>
                                             <th></th>
                                         </tr>
@@ -86,16 +86,16 @@
                                                     <span>{{ ++$key }}</span>
                                                 </td>
                                                 <td>
-                                                    <span>{{ $pegawai->nama_pegawai }}</span>
-                                                </td>
-                                                <td>
-                                                    <span>{{ $pegawai->nipy }}</span>
+                                                    <span>
+                                                        <a href="{{ route('pekerjaan-pegawai.show', $pegawai->id) }}">{{ $pegawai->nama_pegawai }}</a>
+                                                    </span>
                                                 </td>
                                                 <td>
                                                     @foreach($pegawai->user as $user)
-                                                        <span title="{{ $user->email }}" style="cursor: pointer">✅</span>
+                                                        <span title="{{ $user->email }}">{{ $pegawai->nipy }}</span>
                                                     @endforeach
                                                 </td>
+                                                <td>{{ $pegawai->tugas_pegawai_count }}</td>
                                                 <td>20</td>
                                                 <td>Edit</td>
                                             </tr>

@@ -20,7 +20,7 @@ class TugasPegawaiController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('pekerjaan-pegawai.index', compact('pekerjaanSayas'));
+        return view('pekerjaan-saya.index', compact('pekerjaanSayas'));
     }
 
     /**

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Pegawai;
 use App\Models\Tugas;
+use App\Models\TugasPegawai;
 use Illuminate\Http\Request;
 
 class TugasController extends Controller
@@ -34,9 +36,17 @@ class TugasController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Tugas $tugas)
+    public function show($id)
     {
-        //
+        $pegawai = Pegawai::findOrFail($id);
+
+        // Ambil semua tugas berdasarkan pegawai yang dipilih ($pegawai)
+        $pekerjaanPegawais = TugasPegawai::with('buktiTugas')
+            ->where('user_id', $id) // Mengambil tugas sesuai pegawai
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('pegawai.show', compact('pekerjaanPegawais', 'pegawai'));
     }
 
     /**

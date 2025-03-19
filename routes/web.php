@@ -11,6 +11,7 @@ use App\Http\Controllers\PengesahanKetuaController;
 use App\Http\Controllers\PermohonanIzinPenelitianController;
 use App\Http\Controllers\PoinController;
 use App\Http\Controllers\SemesterController;
+use App\Http\Controllers\TugasController;
 use App\Http\Controllers\TugasPegawaiController;
 use App\Models\Mahasiswa;
 use Illuminate\Support\Facades\Route;
@@ -42,6 +43,8 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/data-pegawai', [PegawaiController::class, 'index'])->name('data-pegawai.index');
 
+    Route::get('/pekerjaan-pegawai/{id}', [TugasController::class, 'show'])->name('pekerjaan-pegawai.show');
+
     Route::post('/update-profile', [HomeController::class, 'updateProfile'])->name('update.profile');
 
     Route::post('/update-password', [HomeController::class, 'updatePassword'])->name('update.password');
@@ -70,8 +73,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::put('/tugas-pegawai/update-points/{id}', [TugasPegawaiController::class, 'updatePoints']);
 
     Route::put('/update-bukti-tugas/{id}', [BuktiTugasController::class, 'updateLink']);
-
-
 
 
 });
