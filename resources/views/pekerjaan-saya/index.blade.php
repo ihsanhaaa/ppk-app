@@ -74,7 +74,16 @@
                 </div>
 
                 @if (Auth::user()->pegawai_id)
-
+                    <div class="mb-3">
+                        <select class="form-select form-select-sm w-auto" id="filterSemester">
+                            @foreach ($semesters as $semester)
+                                <option value="{{ $semester->id }}" {{ $semester->id == $selectedSemester ? 'selected' : '' }}>
+                                    {{ $semester->tahun_ajaran }} {{ $semester->semester }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                
                     <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#firstmodal"><i
                             class="bx bx-plus me-1"></i> Tambah Pekerjaan</button>
 
@@ -684,6 +693,13 @@
                 }, 3000);
             }
 
+        </script>
+
+        <script>
+            document.getElementById('filterSemester').addEventListener('change', function () {
+                let selectedSemester = this.value;
+                window.location.href = `?semester_id=${selectedSemester}`;
+            });
         </script>
 
     @endpush

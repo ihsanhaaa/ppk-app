@@ -12,15 +12,25 @@ class TugasPegawaiController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        // Ambil semester aktif sebagai default
+        $semesterAktif = Semester::where('is_active', true)->first();
 
+        // Ambil ID semester dari request, jika tidak ada gunakan semester aktif
+        $selectedSemester = $request->input('semester_id', $semesterAktif ? $semesterAktif->id : null);
+
+        // Ambil semua semester untuk dropdown
+        $semesters = Semester::all();
+
+        // Ambil data tugas berdasarkan semester yang dipilih
         $pekerjaanSayas = TugasPegawai::with('buktiTugas')
             ->where('user_id', Auth::id())
+            ->where('semester_id', $selectedSemester) // Filter berdasarkan semester
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('pekerjaan-saya.index', compact('pekerjaanSayas'));
+        return view('pekerjaan-saya.index', compact('pekerjaanSayas', 'semesters', 'selectedSemester'));
     }
 
     /**

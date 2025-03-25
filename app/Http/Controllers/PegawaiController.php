@@ -10,10 +10,11 @@ class PegawaiController extends Controller
 {
     public function index()
     {
-        $pegawais = Pegawai::withCount('tugasPegawai')->get();
-        // $mahasiswas = Mahasiswa::with('user')->get();
+        $pegawais = Pegawai::withCount('tugasPegawai')
+            ->withSum('tugasPegawai as total_poin', 'points')
+            ->get();
 
-        // dd($mahasiswas);
+        // dd($pegawais);
 
         return view('pegawai.index', compact('pegawais'));
     }

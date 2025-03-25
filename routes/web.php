@@ -56,7 +56,7 @@ Route::group(['middleware' => ['auth']], function () {
 
 
     Route::resource('/pekerjaan-saya', TugasPegawaiController::class);
-    Route::post('/tugas_pegawais', [TugasPegawaiController::class, 'store']);
+    Route::post('/set-pekerjaan-pegawai', [TugasController::class, 'store']);
     Route::patch('/tugas-pegawai/{tugas_pegawai}/status', [TugasPegawaiController::class, 'updateStatus']);
 
     Route::patch('/tugas-pegawai/{tugas_pegawai}', [TugasPegawaiController::class, 'update']);

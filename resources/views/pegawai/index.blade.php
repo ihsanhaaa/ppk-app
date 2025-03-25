@@ -73,10 +73,9 @@
                                         <tr>
                                             <th>#</th>
                                             <th>Nama Pegawai</th>
-                                            <th>Status Login</th>
+                                            <th>NIPY</th>
                                             <th>Jumlah Pekerjaan</th>
                                             <th>Jumlah Poin</th>
-                                            <th></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -95,9 +94,8 @@
                                                         <span title="{{ $user->email }}">{{ $pegawai->nipy }}</span>
                                                     @endforeach
                                                 </td>
-                                                <td>{{ $pegawai->tugas_pegawai_count }}</td>
-                                                <td>20</td>
-                                                <td>Edit</td>
+                                                <td>{{ $pegawai->tugas_pegawai_count ?? 0 }}</td>
+                                                <td>{{ $pegawai->total_poin ?? 0 }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>

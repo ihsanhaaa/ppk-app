@@ -18,14 +18,9 @@ class Pegawai extends Model
         return $this->hasMany(User::class); 
     }
 
-    public function tugas()
-    {
-        return $this->hasMany(TugasPegawai::class, 'pegawai_id');
-    }
-
     public function tugasPegawai()
     {
-        return $this->hasMany(TugasPegawai::class, 'user_id', 'id');
+        return $this->hasMany(TugasPegawai::class, 'pegawai_id');
     }
 
 }

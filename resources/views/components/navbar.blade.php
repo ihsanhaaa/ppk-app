@@ -102,6 +102,7 @@
                         <li>
                             <a href="{{ route('data-pegawai.index') }}">
                                 <i data-feather="users"></i>
+                                <span class="badge rounded-pill bg-success-subtle text-success float-end">9+</span>
                                 <span data-key="t-chat">Data Pegawai</span>
                             </a>
                         </li>
@@ -112,23 +113,9 @@
                                 <span data-key="t-chat">Pekerjaan Saya</span>
                             </a>
                         </li>
-
-                        <li>
-                            <a href="{{ route('pekerjaan-pegawai.index') }}">
-                                <i data-feather="clipboard"></i>
-                                <span class="badge rounded-pill bg-success-subtle text-success float-end">9+</span>
-                                <span data-key="t-chat">Pekerjaan Pegawai</span>
-                            </a>
-                        </li>
                     @endrole
 
                     @role('Pegawai')
-                        <li>
-                            <a href="{{ route('data-pegawai.index') }}">
-                                <i data-feather="users"></i>
-                                <span data-key="t-chat">Data Pegawai</span>
-                            </a>
-                        </li>
 
                         <li>
                             <a href="{{ route('pekerjaan-saya.index') }}">
