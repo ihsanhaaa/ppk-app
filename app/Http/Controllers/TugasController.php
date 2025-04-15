@@ -9,6 +9,7 @@ use App\Models\TugasPegawai;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 
 class TugasController extends Controller
 {
@@ -65,8 +66,37 @@ class TugasController extends Controller
             'created_at' => now(),
         ]);
 
+        $user = User::find($request->user_id);
+
+        // ✅ Pastikan user dan no_hp tersedia
+        if ($user && $user->no_hp) {
+            $formattedDeadline = \Carbon\Carbon::parse($request->deadline)->locale('id')->isoFormat('D MMMM YYYY');
+        
+            // Menambahkan link dan teks Don't Reply di bagian bawah
+            $pesan = "📢 Hai {$user->name},\n\nAnda punya tugas baru:\n📌 *{$request->nama_tugas}*\n🗓 Deadline: {$formattedDeadline}\n\nSilakan cek di https://pegawai.kampusstikessambas.ac.id/\n\n-Don't Reply-!";
+        
+            $this->kirimWhatsappZenziva($user->no_hp, $pesan);
+        }
+        
+
         return redirect()->back();
     }
+
+    protected function kirimWhatsappZenziva($nomor, $pesan)
+    {
+        $userkey = env('ZENZIVA_USERKEY');
+        $passkey = env('ZENZIVA_PASSKEY');
+
+        $response = Http::asForm()->post('https://console.zenziva.net/wareguler/api/sendWA/', [
+            'userkey' => $userkey,
+            'passkey' => $passkey,
+            'to'      => preg_replace('/[^0-9]/', '', $nomor),
+            'message' => $pesan,
+        ]);
+
+        return $response->body();
+    }
+
 
     /**
      * Display the specified resource.
@@ -75,6 +105,10 @@ class TugasController extends Controller
     {
         $pegawai = Pegawai::findOrFail($id);
         $user = User::where('pegawai_id', $pegawai->id)->first();
+
+        if (!$user) {
+            return redirect()->back()->with('error', 'Pengguna belum terverifikasi.');
+        }
     
         // Ambil semester aktif sebagai default
         $semesterAktif = Semester::where('is_active', true)->first();

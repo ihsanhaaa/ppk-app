@@ -14,6 +14,8 @@ use App\Http\Controllers\SemesterController;
 use App\Http\Controllers\TugasController;
 use App\Http\Controllers\TugasPegawaiController;
 use App\Models\Mahasiswa;
+use App\Models\Pegawai;
+use App\Models\TugasPegawai;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,9 +30,10 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    
+    $pegawaiCount = Pegawai::count();
+    $pekerjaanCount = TugasPegawai::count();
 
-    return view('welcome');
+    return view('welcome', compact('pegawaiCount', 'pekerjaanCount'));
 });
 
 Route::group(['middleware' => ['auth']], function () {

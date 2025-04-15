@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\BuktiTugas;
+use App\Models\TugasPegawai;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
 class BuktiTugasController extends Controller
@@ -39,7 +43,35 @@ class BuktiTugasController extends Controller
 
         $buktiTugas->save();
 
+        // Ambil data tugas dan user
+        $tugas = TugasPegawai::find($request->tugas_pegawai_id);
+        $user = User::find($tugas->user_id);
+
+        // Format deadline
+        $formattedDeadline = Carbon::parse($tugas->deadline)->locale('id')->isoFormat('D MMMM YYYY');
+
+        // Pesan WA ke admin
+        $pesan = "✅ Pengumpulan Tugas\n\nDosen/Pegawai *{$user->name}* telah menyelesaikan tugas:\n📌 *{$tugas->nama_tugas}*\n🗓 Deadline: {$formattedDeadline}\n\nCek detail di https://pegawai.kampusstikessambas.ac.id/\n\n-Don't Reply-";
+
+        // Kirim WA ke admin
+        $this->kirimWhatsappZenziva('089602461010', $pesan);
+
         return response()->json(['success' => true]);
+    }
+
+    protected function kirimWhatsappZenziva($nomor, $pesan)
+    {
+        $userkey = env('ZENZIVA_USERKEY');
+        $passkey = env('ZENZIVA_PASSKEY');
+
+        $response = Http::asForm()->post('https://console.zenziva.net/wareguler/api/sendWA/', [
+            'userkey' => $userkey,
+            'passkey' => $passkey,
+            'to'      => preg_replace('/[^0-9]/', '', $nomor),
+            'message' => $pesan,
+        ]);
+
+        return $response->body();
     }
 
 

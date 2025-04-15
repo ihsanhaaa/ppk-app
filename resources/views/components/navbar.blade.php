@@ -41,12 +41,14 @@
             <div class="dropdown d-inline-block">
                 <button type="button" class="btn header-item bg-light-subtle border-start border-end" id="page-header-user-dropdown"
                 data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <img class="rounded-circle header-profile-user" src="https://api.dicebear.com/5.x/identicon/svg?seed={{ Auth::user()->name }}"
-                        alt="Header Avatar">
-                    @if (Auth::user()->pegawai_id)
-                        <span class="d-none d-xl-inline-block ms-1 fw-medium">{{ Auth::user()->pegawai->nama_pegawai }}</span>
-                    @else
-                        <span class="d-none d-xl-inline-block ms-1 fw-medium">{{ Auth::user()->name }}</span>
+                    @if (Auth::user())
+                        <img class="rounded-circle header-profile-user" src="https://api.dicebear.com/5.x/identicon/svg?seed={{ Auth::user()->name }}"
+                            alt="Header Avatar">
+                        @if (Auth::user()->pegawai_id)
+                            <span class="d-none d-xl-inline-block ms-1 fw-medium">{{ Auth::user()->pegawai->nama_pegawai }}</span>
+                        @else
+                            <span class="d-none d-xl-inline-block ms-1 fw-medium">{{ Auth::user()->name }}</span>
+                        @endif
                     @endif
                     
                     <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
@@ -100,9 +102,17 @@
 
                     @role('Ketua')
                         <li>
+                            <a href="{{ route('semesters.index') }}">
+                                <i data-feather="users"></i>
+                                {{-- <span class="badge rounded-pill bg-success-subtle text-success float-end">9+</span> --}}
+                                <span data-key="t-chat">Pengaturan Semester</span>
+                            </a>
+                        </li>
+                        
+                        <li>
                             <a href="{{ route('data-pegawai.index') }}">
                                 <i data-feather="users"></i>
-                                <span class="badge rounded-pill bg-success-subtle text-success float-end">9+</span>
+                                {{-- <span class="badge rounded-pill bg-success-subtle text-success float-end">9+</span> --}}
                                 <span data-key="t-chat">Data Pegawai</span>
                             </a>
                         </li>

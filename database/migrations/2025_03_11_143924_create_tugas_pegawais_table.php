@@ -15,12 +15,13 @@ return new class extends Migration
             $table->id();
             $table->foreignId('pegawai_id');
             $table->foreignId('user_id');
-            $table->foreignId('tugas_id')->nullable();
+            // $table->foreignId('tugas_id')->nullable();
             $table->foreignId('semester_id');
             $table->integer('points')->default(0);
             $table->text('nama_tugas');
             $table->text('keterangan')->nullable();
             $table->enum('progres', ['todo', 'in-progress', 'done'])->default('todo');
+            $table->enum('jenis_pekerjaan', ['Bulanan', 'Semesteran', 'Tahunan']);
             $table->string('prioritas')->default('normal');
             $table->string('reviewer')->nullable();
             $table->timestamp('deadline')->nullable();
